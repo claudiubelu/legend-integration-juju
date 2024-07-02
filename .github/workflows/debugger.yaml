@@ -1,0 +1,57 @@
+name: Test Juju connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo snap install juju --channel=3.2/stable --classic
+
+      # We need the kubeconfig and the controllers.yaml file into our environment
+      # in order to login and refresh the charms.
+      - name: Adding Credentials
+        shell: bash
+        run: |
+          mkdir -p ~/.kube
+          mkdir -p ~/.local/share/juju
+          echo "${KUBECONFIG_B64}" | base64 -d > ~/.kube/config
+          echo "${CONTROLLERS_B64}" | base64 -d > ~/.local/share/juju/controllers.yaml
+
+          date
+          echo "${CONTROLLER_PASSWORD}" | juju login -c finos-legend-v3 -u admin
+          date
+        env:
+          KUBECONFIG_B64: "${{ secrets.KUBECONFIG_B64 }}"
+          CONTROLLERS_B64: "${{ secrets.CONTROLLERS_B64 }}"
+          CONTROLLER_PASSWORD: "${{ secrets.CONTROLLER_PASSWORD }}"
+
+      - name: Increase logging verbosity
+        run: set -x
+
+      - name: Retry Juju Status
+        run: |
+          retries=30
+          delay=10
+          set +e
+          for i in $(seq 1 $retries); do
+            juju switch finos-legend
+            juju status --relations
+            juju status --relations
+            juju status --relations
+
+            juju switch finos-legend-twin
+            juju status --relations
+            juju status --relations
+            juju status --relations
+            echo "retrying in $delay seconds..."
+            sleep $delay
+          done
+
+      - name: Capture Juju Logs
+        run: |
+          juju status --relations --format=yaml | tee juju_status.yaml
+          juju debug-log --replay --format=short --no-tail | tee juju_debug.log
