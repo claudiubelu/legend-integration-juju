@@ -9,11 +9,11 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          #sudo snap install juju --channel=3.0/stable --classic
-          wget --no-check-certificate https://launchpad.net/juju/3.0/3.0.3/+download/juju-3.0.3-linux-amd64.tar.xz
-          tar -xvf juju-3.0.3-linux-amd64.tar.xz
-          sudo chmod a+x ./juju
-          sudo mv ./juju /usr/bin
+          sudo snap install juju --channel=3.3/stable --classic
+          #wget --no-check-certificate https://launchpad.net/juju/3.0/3.0.3/+download/juju-3.0.3-linux-amd64.tar.xz
+          #tar -xvf juju-3.0.3-linux-amd64.tar.xz
+          #sudo chmod a+x ./juju
+          #sudo mv ./juju /usr/bin
 
       # We need the kubeconfig and the controllers.yaml file into our environment
       # in order to login and refresh the charms.
