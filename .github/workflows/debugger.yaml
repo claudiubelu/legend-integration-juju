@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          sudo snap install juju --channel=3.3/stable --classic
+          sudo snap install juju --channel=3.1/stable --classic
           #wget --no-check-certificate https://launchpad.net/juju/3.0/3.0.3/+download/juju-3.0.3-linux-amd64.tar.xz
           #tar -xvf juju-3.0.3-linux-amd64.tar.xz
           #sudo chmod a+x ./juju
@@ -33,24 +33,22 @@ jobs:
           CONTROLLERS_B64: "${{ secrets.CONTROLLERS_B64 }}"
           CONTROLLER_PASSWORD: "${{ secrets.CONTROLLER_PASSWORD }}"
 
-      - name: Increase logging verbosity
-        run: set -x
-
       - name: Retry Juju Status
         run: |
           retries=30
           delay=10
           set +e
+          set -x
           for i in $(seq 1 $retries); do
-            juju switch finos-legend
-            juju status --relations
-            juju status --relations
-            juju status --relations
+            juju switch finos-legend --debug --verbose
+            juju status --relations --debug --verbose
+            juju status --relations --debug --verbose
+            juju status --relations --debug --verbose
 
-            juju switch finos-legend-twin
-            juju status --relations
-            juju status --relations
-            juju status --relations
+            juju switch finos-legend-twin --debug --verbose
+            juju status --relations --debug --verbose
+            juju status --relations --debug --verbose
+            juju status --relations --debug --verbose
             echo "retrying in $delay seconds..."
             sleep $delay
           done
