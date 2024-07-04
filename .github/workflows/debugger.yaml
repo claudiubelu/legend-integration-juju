@@ -20,6 +20,10 @@ jobs:
         run: |
           openssl version
           ldd $(which juju)
+          sudo apt-get update
+          sudo apt-get install --only-upgrade openssl
+          openssl version
+          ldd $(which juju)
 
       # We need the kubeconfig and the controllers.yaml file into our environment
       # in order to login and refresh the charms.
