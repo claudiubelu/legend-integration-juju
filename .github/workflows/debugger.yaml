@@ -15,6 +15,12 @@ jobs:
           #sudo chmod a+x ./juju
           #sudo mv ./juju /usr/bin
 
+      - name: Check OpenSSL version
+        shell: bash
+        run: |
+          openssl version
+          ldd $(which juju)
+
       # We need the kubeconfig and the controllers.yaml file into our environment
       # in order to login and refresh the charms.
       - name: Adding Credentials
